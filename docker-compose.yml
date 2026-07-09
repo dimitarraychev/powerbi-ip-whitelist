@@ -1,6 +1,8 @@
 services:
   powerbi-ip-whitelist:
-    build: .
+    build:
+      context: .
+      network: host
     container_name: powerbi-ip-whitelist
     restart: unless-stopped
     network_mode: host
@@ -18,3 +20,8 @@ services:
 
       # Set to "true" to remove old IPs that are no longer in the published list
       PRUNE_STALE_RULES: "true"
+
+networks:
+  default:
+    name: global-link
+    external: true
