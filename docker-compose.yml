@@ -1,0 +1,20 @@
+services:
+  powerbi-ip-whitelist:
+    build: .
+    container_name: powerbi-ip-whitelist
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+
+    environment:
+      POWERBI_SERVICE_TAGS: "PowerBI.WestEurope"
+      POSTGRES_PORT: "5432"
+      CRON_SCHEDULE: "0 6 * * 1"
+      LOG_LEVEL: "info"
+
+      MONGODB_HOST: "mongodb"
+      MONGODB_PORT: "27017"
+      MONGODB_DB: "powerbi-ip-whitelist"
+
+      # Set to "true" to remove old IPs that are no longer in the published list
+      PRUNE_STALE_RULES: "true"
