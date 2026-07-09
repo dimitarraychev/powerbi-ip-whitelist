@@ -6,35 +6,28 @@ import { ServiceTagEntry, ServiceTagsFile } from "../types";
 
 const DOWNLOAD_PAGE = `https://www.microsoft.com/en-us/download/confirmation.aspx?id=${config.microsoftDownloadId}`;
 
-/**
- * Scrapes the Microsoft download confirmation page to find the direct
- * download URL for the Azure IP Ranges JSON file (updated weekly by MS).
- */
 async function resolveDownloadUrl(): Promise<string> {
   logger.info("Fetching Microsoft download page to resolve JSON URL...");
 
   const { data: html } = await axios.get<string>(DOWNLOAD_PAGE, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; powerbi-ip-whitelister/1.0)",
+      "User-Agent": "Mozilla/5.0 (compatible; powerbi-ip-whitelist/1.0)",
     },
     timeout: 15_000,
   });
 
   const $ = cheerio.load(html);
 
-  // Microsoft embeds the direct link in an anchor with class "failoverLink"
-  // or in a meta refresh / direct download link
   let downloadUrl: string | undefined;
 
   $("a").each((_, el) => {
     const href = $(el).attr("href") ?? "";
     if (href.includes("download.microsoft.com") && href.endsWith(".json")) {
       downloadUrl = href;
-      return false; // break
+      return false;
     }
   });
 
-  // Fallback: look for it in meta tags
   if (!downloadUrl) {
     $('meta[http-equiv="refresh"]').each((_, el) => {
       const content = $(el).attr("content") ?? "";
@@ -51,9 +44,6 @@ async function resolveDownloadUrl(): Promise<string> {
   return downloadUrl;
 }
 
-/**
- * Downloads the Azure IP Ranges JSON and returns the full parsed object.
- */
 async function downloadServiceTags(url: string): Promise<ServiceTagsFile> {
   logger.info("Downloading service tags JSON...");
 
@@ -69,10 +59,6 @@ async function downloadServiceTags(url: string): Promise<ServiceTagsFile> {
   return data;
 }
 
-/**
- * Fetches IPv4 prefixes for the configured service tags.
- * Returns a map of tagName -> { changeNumber, prefixes[] }
- */
 export async function fetchPowerBiIps(): Promise<
   Map<string, { changeNumber: number; prefixes: string[] }>
 > {
@@ -94,7 +80,6 @@ export async function fetchPowerBiIps(): Promise<
       continue;
     }
 
-    // Filter out IPv6 (CIDR with colons)
     const ipv4Prefixes = entry.properties.addressPrefixes.filter(
       (p) => !p.includes(":"),
     );

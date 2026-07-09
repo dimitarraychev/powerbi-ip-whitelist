@@ -4,7 +4,7 @@ import { config } from "../config/config";
 import { logger } from "../config/winston";
 
 const execAsync = promisify(exec);
-const RULE_COMMENT = "powerbi-ip-whitelister";
+const RULE_COMMENT = "powerbi-ip-whitelist";
 
 async function ruleExists(cidr: string): Promise<boolean> {
   try {
@@ -29,7 +29,7 @@ async function pruneStaleRules(currentCidrs: Set<string>): Promise<string[]> {
   const lines = stdout.split("\n");
 
   const ruleRegex =
-    /\[\s*(\d+)\]\s+.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d+).*?#\s*powerbi-ip-whitelister/;
+    /\[\s*(\d+)\]\s+.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d+).*?#\s*powerbi-ip-whitelist/;
   const toDelete: Array<{ num: number; cidr: string }> = [];
 
   for (const line of lines) {

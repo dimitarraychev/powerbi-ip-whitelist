@@ -7,7 +7,7 @@ import { runWhitelist } from "./services/whitelistService";
 async function main(): Promise<void> {
   await connectMongoDB();
 
-  logger.info("Starting powerbi-ip-whitelister", {
+  logger.info("Starting powerbi-ip-whitelist", {
     serviceTags: config.serviceTags,
     cronSchedule: config.cronSchedule,
     postgresPort: config.postgresPort,
