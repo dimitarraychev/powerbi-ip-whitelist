@@ -15,14 +15,9 @@ services:
       CRON_SCHEDULE: "0 6 * * 1"
       LOG_LEVEL: "info"
 
-      MONGODB_HOST: "mongodb"
+      MONGODB_HOST: "localhost"
       MONGODB_PORT: "27017"
       MONGODB_DB: "powerbi-ip-whitelist"
 
       # Set to "true" to remove old IPs that are no longer in the published list
       PRUNE_STALE_RULES: "true"
-
-networks:
-  default:
-    name: global-link
-    external: true
