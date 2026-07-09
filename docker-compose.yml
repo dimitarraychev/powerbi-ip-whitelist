@@ -4,6 +4,7 @@ services:
       context: .
       network: host
     container_name: powerbi-ip-whitelist
+    image: powerbi-ip-whitelist:latest
     restart: unless-stopped
     network_mode: host
     privileged: true
