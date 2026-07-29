@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 import { initMongoLogging, logger } from "./winston.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 const DB_PORT = process.env.MONGO_DB_PORT || 27017;
-const DB_HOST = process.env.MONGO_DB_HOST || "mongodb";
+const DB_HOST = process.env.MONGO_DB_HOST || "localhost";
 const DB_USER = process.env.MONGO_DB_USERNAME;
 const DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
 const DB_TABLE = process.env.MONGO_DB_TABLE;
