@@ -30,7 +30,7 @@ async function ruleExists(cidr: string): Promise<boolean> {
 
 async function addRule(cidr: string): Promise<void> {
   assertValidCidr(cidr);
-  const cmd = `ufw allow from ${cidr} to any port ${config.postgresPort} proto tcp comment '${RULE_COMMENT}'`;
+  const cmd = `ufw route allow proto tcp from ${cidr} to any port ${config.postgresPort} comment '${RULE_COMMENT}'`;
   logger.debug("Running ufw command", { cmd });
   await execAsync(cmd);
 }
