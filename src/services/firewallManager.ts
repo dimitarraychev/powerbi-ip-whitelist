@@ -5,6 +5,17 @@ import { logger } from "../config/winston";
 
 const execAsync = promisify(exec);
 const RULE_COMMENT = "powerbi-ip-whitelist";
+const CIDR_REGEX = /^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/;
+
+function assertValidCidr(cidr: string): void {
+  if (!CIDR_REGEX.test(cidr)) {
+    throw new Error(`Invalid CIDR format: ${cidr}`);
+  }
+  const [ip, prefix] = cidr.split("/");
+  if (ip.split(".").some((o) => Number(o) > 255) || Number(prefix) > 32) {
+    throw new Error(`Invalid CIDR values: ${cidr}`);
+  }
+}
 
 async function ruleExists(cidr: string): Promise<boolean> {
   try {
@@ -18,6 +29,7 @@ async function ruleExists(cidr: string): Promise<boolean> {
 }
 
 async function addRule(cidr: string): Promise<void> {
+  assertValidCidr(cidr);
   const cmd = `ufw allow from ${cidr} to any port ${config.postgresPort} proto tcp comment '${RULE_COMMENT}'`;
   logger.debug("Running ufw command", { cmd });
   await execAsync(cmd);
@@ -42,8 +54,9 @@ async function pruneStaleRules(currentCidrs: Set<string>): Promise<string[]> {
   }
 
   for (const { num, cidr } of toDelete.reverse()) {
+    assertValidCidr(cidr);
     logger.info("Pruning stale ufw rule", { cidr, ruleNum: num });
-    await execAsync(`echo "y" | ufw delete ${num}`);
+    await execAsync(`ufw --force delete ${num}`);
     pruned.push(cidr);
   }
 
@@ -61,8 +74,14 @@ export async function applyWhitelistRules(cidrs: string[]): Promise<{
   const pruned: string[] = [];
   const errors: string[] = [];
 
+  if (cidrs.length === 0) {
+    logger.error("Refusing to apply whitelist: received empty CIDR list");
+    return { added, skipped, pruned, errors: ["empty cidr list, aborting"] };
+  }
+
   for (const cidr of cidrs) {
     try {
+      assertValidCidr(cidr);
       if (await ruleExists(cidr)) {
         logger.debug("Rule already exists, skipping", { cidr });
         skipped.push(cidr);
