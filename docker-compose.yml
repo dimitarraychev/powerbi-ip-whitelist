@@ -11,3 +11,12 @@ services:
     volumes:
       - /etc/ufw:/etc/ufw
       - /lib/modules:/lib/modules
+    environment:
+      - POWERBI_SERVICE_TAGS=${POWERBI_SERVICE_TAGS}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - CRON_SCHEDULE=${CRON_SCHEDULE}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - PRUNE_STALE_RULES=${PRUNE_STALE_RULES}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
+      - MONGODB_TABLE=${MONGODB_TABLE}

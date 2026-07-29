@@ -9,7 +9,7 @@ export const config = {
 
   mongoHost: process.env.MONGODB_HOST ?? "mongodb",
   mongoPort: parseInt(process.env.MONGODB_PORT ?? "27017", 10),
-  mongoDb: process.env.MONGODB_DB ?? "powerbi-ip-whitelist",
+  mongoDb: process.env.MONGODB_TABLE ?? "powerbi-ip-whitelist",
 
   // Whether to remove stale rules that are no longer in the published list
   pruneStaleRules: process.env.PRUNE_STALE_RULES === "true",
