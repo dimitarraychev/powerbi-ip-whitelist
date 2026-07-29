@@ -1,21 +1,24 @@
 import mongoose from "mongoose";
-import { config } from "./config";
-import { logger } from "./winston";
+import { initMongoLogging, logger } from "./winston.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-const MONGO_URI = `mongodb://${config.mongoHost}:${config.mongoPort}/${config.mongoDb}`;
+const DB_PORT = process.env.MONGO_DB_PORT || 27017;
+const DB_HOST = process.env.MONGO_DB_HOST || "mongodb";
+const DB_USER = process.env.MONGO_DB_USERNAME;
+const DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
+const DB_TABLE = process.env.MONGO_DB_TABLE;
+const MONGO_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_TABLE}?authSource=admin`;
 
-const connectMongoDB = async (): Promise<void> => {
+const connectDB = async (): Promise<void> => {
   try {
     await mongoose.connect(MONGO_URI);
-    logger.info("✅ MongoDB connected", {
-      host: config.mongoHost,
-      port: config.mongoPort,
-      db: config.mongoDb,
-    });
+    initMongoLogging();
+    logger.info("✅ MongoDB connected", { port: DB_PORT });
   } catch (err) {
-    logger.error("❌ MongoDB connection failed", { error: err });
+    logger.error("❌ MongoDB connection failed:", err);
     process.exit(1);
   }
 };
 
-export default connectMongoDB;
+export default connectDB;
