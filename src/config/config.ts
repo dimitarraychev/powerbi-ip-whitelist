@@ -11,6 +11,5 @@ export const config = {
   mongoPort: parseInt(process.env.MONGO_DB_PORT ?? "27017", 10),
   mongoDb: process.env.MONGO_DB_TABLE ?? "powerbi-ip-whitelist",
 
-  // Whether to remove stale rules that are no longer in the published list
   pruneStaleRules: process.env.PRUNE_STALE_RULES === "true",
 };
